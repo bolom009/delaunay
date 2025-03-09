@@ -1,48 +1,42 @@
-package poly2tri
+package delaunay
 
 type AdvancingFront struct {
-	head        *Node
-	tail        *Node
-	search_node *Node
+	head       *Node
+	tail       *Node
+	searchNode *Node
 }
 
 func NewAdvancingFront(head, tail *Node) *AdvancingFront {
-	af := &AdvancingFront{}
-	af.Init(head, tail)
-	return af
-}
-func (this *AdvancingFront) Init(head, tail *Node) {
-	/** @type {Node} */
-	this.head = head
-	/** @type {Node} */
-	this.tail = tail
-	/** @type {Node} */
-	this.search_node = head
+	return &AdvancingFront{
+		head:       head,
+		tail:       tail,
+		searchNode: head,
+	}
 }
 
-func (this *AdvancingFront) locateNode(x float32) *Node {
-	node := this.search_node
+func (a *AdvancingFront) locateNode(x float32) *Node {
+	node := a.searchNode
 	if x < node.value {
 		for node = node.prev; node != nil; node = node.prev {
 			if x >= node.value {
-				this.search_node = node
+				a.searchNode = node
 				return node
 			}
 		}
 	} else {
 		for node = node.next; node != nil; node = node.next {
 			if x < node.value {
-				this.search_node = node.prev
+				a.searchNode = node.prev
 				return node.prev
 			}
 		}
 	}
 	return nil
 }
-func (this *AdvancingFront) locatePoint(point *Point) *Node {
-	px := point.x
-	node := this.search_node
-	nx := node.point.x
+func (a *AdvancingFront) locatePoint(point *Point) *Node {
+	px := point.X
+	node := a.searchNode
+	nx := node.point.X
 	if px == nx {
 		// Here we are comparing point references, not values
 		if point != node.point {
@@ -56,7 +50,6 @@ func (this *AdvancingFront) locatePoint(point *Point) *Node {
 			}
 		}
 	} else if px < nx {
-		/* jshint boss:true */
 		for node = node.prev; node != nil; node = node.prev {
 			if point == node.point {
 				break
@@ -70,7 +63,7 @@ func (this *AdvancingFront) locatePoint(point *Point) *Node {
 		}
 	}
 	if node != nil {
-		this.search_node = node
+		a.searchNode = node
 	}
 	return node
 }
